@@ -14,6 +14,11 @@ public class Customer {
 		this.pass = pass;
 		this.phone = phone;
 	}
+	public Customer(String id, String pass, String phone) {
+		this.id = id;
+		this.pass = pass;
+		this.phone = phone;
+	}
 	
 	public String getId() {
 		return id;

@@ -10,6 +10,7 @@ public class GuestHouse {
 	ArrayList<Room> rooms = new ArrayList<>();
 
 	public GuestHouse() {}
+	
 	public GuestHouse(String id, String name, String address, ArrayList<Room> rooms) {
 		super();
 		this.id = id;
