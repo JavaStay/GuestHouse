@@ -7,20 +7,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.stay.exception.DMLException;
 import com.stay.exception.DuplicateIDException;
 import com.stay.exception.RecordNotFoundException;
 import com.stay.vo.Customer;
-import com.stay.vo.GuestHouse;
 import com.stay.vo.Room;
 
 import config.ServerInfo;
+import com.stay.vo.GuestHouse;
 
 public class ReserveDao {
-	
+
 	private String location="서울특별시";
-	
+
 	//싱글톤
 	private static ReserveDao dao = new ReserveDao();
 
@@ -45,11 +47,11 @@ public class ReserveDao {
 		System.out.println("DB Connection 성공");
 		return conn;
 	}
-	
+
 	public String getLocation() {
 		return location;
 	}
-	
+
 	public void setLocation(String location) {
 		this.location= location;
 	}
@@ -64,9 +66,9 @@ public class ReserveDao {
 			ps.setString(2, cust.getName());
 			ps.setString(3, cust.getPass());
 			ps.setString(4, cust.getPhone());
-			
+
 			ps.executeUpdate();
-	
+
 			System.out.println("회원 가입에 성공하셨습니다.");
 			
 		}catch (SQLIntegrityConstraintViolationException e) { 
@@ -81,23 +83,23 @@ public class ReserveDao {
 //	public boolean findCustomer(String id, Connection con) throws SQLException {
 //		ResultSet rs = null;
 //		String query = "SELECT id FROM customer WHERE id =?";
-//		
+//
 //		try(PreparedStatement ps = con.prepareStatement(query)) {
-//			
+//
 //			ps.setString(1, id);
 //			rs = ps.executeQuery();
-//		} 
-//		
+//		}
+//
 //		return rs.next();
 //	}
 	
 	public void login( String id, String pass) throws RecordNotFoundException, DMLException {
 		
 		String query = "SELECT id, pass FROM customer WHERE id =? and pass =?";
-		
-		try(Connection conn = getConnection(); 
-			PreparedStatement ps = conn.prepareStatement(query)) {
-			
+
+		try (Connection conn = getConnection();
+			 PreparedStatement ps = conn.prepareStatement(query)) {
+
 			ps.setString(1, id);
 			ps.setString(2, pass);
 			ResultSet rs = ps.executeQuery();
@@ -106,7 +108,7 @@ public class ReserveDao {
 				throw new RecordNotFoundException("[ERROR] 존재하지 않는 id 입니다.");
 			}
 			else System.out.println("로그인에 성공하셨습니다.");
-			
+
 		} catch (SQLException e) {
 			throw new DMLException("[ERROR] 로그인 시 문제가 발생해 로그인이 이뤄지지 않았습니다.");
 		}
@@ -129,7 +131,7 @@ public class ReserveDao {
 				throw new RecordNotFoundException("[ERROR] 존재하지 않는 id 입니다.");
 			}
 			else System.out.println("회원정보 수정에 성공하셨습니다.");
-			
+
 		} catch (SQLException e) {
 			throw new DMLException("[ERROR] 회원 정보 수정 시 문제가 발생해 수정이 이뤄지지 않았습니다.");
 		}
@@ -148,7 +150,7 @@ public class ReserveDao {
 				throw new RecordNotFoundException("[ERROR] 존재하지 않는 id 입니다.");
 			}
 			else System.out.println("회원 탈퇴에 성공했습니다.");
-			
+
 		} catch (SQLException e) {
 			throw new DMLException("[ERROR] 회원 삭제 시 문제가 발생해 삭제가 이뤄지지 않았습니다.");
 		}
@@ -198,7 +200,7 @@ public class ReserveDao {
 		return list;
 	}
 	
-	//1. 방마다 가격인하율 뽑아서 방 30개 리스트 출력 
+	//1. 방마다 가격인하율 뽑아서 방 30개 리스트 출력
 	public ArrayList<GuestHouse> findByLeadMonth() throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
@@ -220,10 +222,10 @@ public class ReserveDao {
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
-		
+
 		return list;
 	}
-	//2. 숙소마다 가격인하율 평균을 내서 숙소 10개 리스트만 출력 
+	//2. 숙소마다 가격인하율 평균을 내서 숙소 10개 리스트만 출력
 	public ArrayList<GuestHouse> findByLeadMonth2() throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
@@ -241,18 +243,129 @@ public class ReserveDao {
 			Connection conn=getConnection();
 			PreparedStatement ps = conn.prepareStatement(query);){
 			ps.setString(1, location);
-			
+
 			rs=ps.executeQuery();
 			int i=0;
 			while(rs.next()) {
 				list.add(new  GuestHouse(rs.getString(1),rs.getString(1),rs.getString(1),null));
-				
+
 			}
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
-		
-		return list;
+        return list;
+    }
+
+	// 지역 내 게스트하우스별 최저가 숙소 sorting
+	public 	ArrayList<GuestHouse> findByMinPrice() throws DMLException {
+		ArrayList<GuestHouse> list =  new ArrayList<>();
+
+		String query = "SELECT g1.id, g1.name, g1.address, g1.room_num, g1.room_price, g1.capacity " +
+						"FROM guesthouse g1 " +
+						"JOIN (SELECT name, MIN(room_price) AS min_price FROM guesthouse WHERE address = ? GROUP BY name) g2 " +
+						"ON g1.name = g2.name AND g1.room_price = g2.min_price WHERE g1.address = ? ORDER BY g1.room_price";
+
+		try (Connection con = getConnection();
+			 PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setString(1, location);
+			ps.setString(2, location);
+
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				ArrayList<Room> rooms = new ArrayList<>();
+				rooms.add(new Room(
+						rs.getInt("room_num"),
+						rs.getInt("room_price"),
+						rs.getInt("capacity")));
+				list.add(new GuestHouse(
+						rs.getString("id"),
+						rs.getString("name"),
+						rs.getString("address"),
+						rooms));
+				}
+			return list;
+			}
+			catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
+		}
+	}
+
+	// 지역 내 게스트하우스별 평점 상위 10% 숙소 sorting
+	public 	ArrayList<GuestHouse> findByTopTenPercent() throws DMLException {
+		ArrayList<GuestHouse> list =  new ArrayList<>();
+		Set<String> guestHouseIds = new HashSet<>();
+
+		String query = "SELECT s.id, s.name, s.address, s.room_num, s.room_price, s.capacity, s.percent " +
+						"FROM(SELECT g1.id, g1.name, g1.address, g1.room_num, g1.room_price, g1.capacity, g2.avg_rating, " +
+							"percent_rank()over(partition by address order by avg_rating desc) AS percent " +
+							"FROM guesthouse g1 " +
+							"JOIN (SELECT guesthouse_id, avg(rating) avg_rating FROM review GROUP BY GuestHouse_id) g2 " +
+							"ON g1.id=g2.guesthouse_id WHERE g1.address = ?) s " +
+						"WHERE s.percent<=0.1";
+
+		try (Connection con = getConnection();
+			 PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setString(1, location);
+
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				String id = rs.getString("id");
+				if (guestHouseIds.add(id)) {
+					list.add(new GuestHouse(
+						rs.getString("id"),
+						rs.getString("name"),
+						rs.getString("address"),
+						null));
+					}
+			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
+		}
+	}
+
+	// 가격 범위로 게스트 하우스 조회
+	public 	ArrayList<GuestHouse> findByprice(int x, int y) throws DMLException {
+		ArrayList<GuestHouse> list =  new ArrayList<>();
+		Set<String> guestHouseIds = new HashSet<>();
+
+		String query = "SELECT id, name, address, room_num, room_price, capacity " +
+						"FROM guesthouse " +
+						"WHERE address = ? AND room_price between ? AND ?";
+
+		try (Connection con = getConnection();
+			 PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setString(1, location);
+			ps.setInt(2, x);
+			ps.setInt(3, y);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				ArrayList<Room> rooms = new ArrayList<>();
+				rooms.add(new Room(
+						rs.getInt("room_num"),
+						rs.getInt("room_price"),
+						rs.getInt("capacity")));
+				list.add(new GuestHouse(
+						rs.getString("id"),
+						rs.getString("name"),
+						rs.getString("address"),
+						rooms));
+
+				if(list.isEmpty()){
+					System.out.println("검색하신 가격 범위의 게스트하우스는 없습니다.");
+				}
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
+		}
 	}
 	
 }//class

@@ -5,23 +5,28 @@ import java.util.ArrayList;
 import com.stay.dao.ReserveDao;
 import com.stay.vo.GuestHouse;
 
+
 public class Test {
 
 	public static void main(String[] args) {
 		ReserveDao dao = ReserveDao.getInstance();
-
 		
 		//dao.createCustomer(new Customer("10", "신승현", "qwer123", "010-1111-1111"));
 		
-		
+		printlist(dao.findByReviceCount());
 
-		
-}
-	public static void printlist(ArrayList<GuestHouse> list) {
-		for(GuestHouse g : list)System.out.println(g);
 
-	
+		System.out.println("========================");
 
+		printlist(dao.findByMinPrice());
+		printlist(dao.findByTopTenPercent());
+		printlist(dao.findByprice(15000,60000));
 	}
-	
+
+		
+
+	public static void printlist(ArrayList<GuestHouse> list) {
+		for(GuestHouse g : list)
+			System.out.println(g);
+	}
 }
