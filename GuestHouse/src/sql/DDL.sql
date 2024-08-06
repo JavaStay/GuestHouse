@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
   `total_price` INT NULL,
   `Customer_id` VARCHAR(10) NOT NULL,
   `GuestHouse_id` VARCHAR(10) NOT NULL,
-  'GuestHouse_room_num' int NOT NULL,
+  `GuestHouse_room_num` int NOT NULL,
   
   PRIMARY KEY (`id`),
   INDEX `fk_Reservation_Customer_idx` (`Customer_id` ASC) VISIBLE,
@@ -88,12 +88,7 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
     FOREIGN KEY (`GuestHouse_id`,`GuestHouse_room_num`)
     REFERENCES `guesthouse`.`GuestHouse` (`id`,`room_num`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Reservation_GuestHouse2`
-    FOREIGN KEY (`GuestHouse_room_num`)
-    REFERENCES `guesthouse`.`GuestHouse` (`room_num`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION))
+    ON UPDATE NO ACTION);
 ENGINE = InnoDB;
 
 
