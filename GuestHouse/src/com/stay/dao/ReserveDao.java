@@ -79,21 +79,7 @@ public class ReserveDao {
 		}
 	}
 	
-	
-//	public boolean findCustomer(String id, Connection con) throws SQLException {
-//		ResultSet rs = null;
-//		String query = "SELECT id FROM customer WHERE id =?";
-//
-//		try(PreparedStatement ps = con.prepareStatement(query)) {
-//
-//			ps.setString(1, id);
-//			rs = ps.executeQuery();
-//		}
-//
-//		return rs.next();
-//	}
-	
-	public void login( String id, String pass) throws RecordNotFoundException, DMLException {
+	public String login( String id, String pass) throws RecordNotFoundException, DMLException {
 		
 		String query = "SELECT id, pass FROM customer WHERE id =? and pass =?";
 
@@ -113,7 +99,7 @@ public class ReserveDao {
 			throw new DMLException("[ERROR] 로그인 시 문제가 발생해 로그인이 이뤄지지 않았습니다.");
 		}
 		
-		
+		return id;
 	}
 	
 	
@@ -157,7 +143,7 @@ public class ReserveDao {
 	}
 	
 	
-	public ArrayList<GuestHouse> findByReviceCount() throws DMLException{
+	public ArrayList<GuestHouse> findByReviewCount() throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
 		String query="SELECT g1.id,g1.name,g1.address,g1.room_num,g1.room_price,g1.capacity,"
