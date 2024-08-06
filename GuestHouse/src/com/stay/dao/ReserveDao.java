@@ -426,7 +426,7 @@ public class ReserveDao {
 
 
 
-	public List<GuestHouse> findByResevable(String location, String startdate, String enddate) {
+	public List<GuestHouse> findByReservable(String location, String startdate, String enddate) {
 		String query = "SELECT r.start_date,r.end_date,r.GuestHouse_id, g.name, g.address, g.room_num, g.room_price, g.capacity \n" +
 				"FROM reservation r, (SELECT id, name,address,room_num,room_price,capacity  from guesthouse where address = ?) g\n" +
 				"WHERE r.GuestHouse_id = g.id and  \n" +

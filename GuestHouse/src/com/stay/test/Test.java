@@ -126,7 +126,7 @@ public class Test {
 				String enddate = sc.next();
 
 
-				dao.findByResevable(location, startdate, enddate).forEach(System.out::println);
+				dao.findByReservable(location, startdate, enddate).forEach(System.out::println);
 				
 				break;
 				
