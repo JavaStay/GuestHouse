@@ -71,7 +71,6 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
   `start_date` DATE NULL,
   `end_date` DATE NULL,
   `total_price` INT NULL,
-  `` VARCHAR(45) NULL,
   `Customer_id` VARCHAR(10) NOT NULL,
   `GuestHouse_id` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`id`),

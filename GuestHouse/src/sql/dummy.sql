@@ -31,6 +31,20 @@ INSERT INTO `guesthouse`.`GuestHouse` (`id`, `name`, `address`, `room_num`, `roo
 ('GH029', '호수정원', '강원도', 109, 52000, 4),
 ('GH030', '바람의집', '강원도', 110, 62000, 2);
 
+
+-- Insert dummy data into the Customer table
+INSERT INTO `guesthouse`.`Customer` (`id`, `pass`, `name`, `phone`) VALUES
+('c001', 'pass123', 'Alice', '010-1234-5678'),
+('c002', 'pass234', 'Bob', '010-2345-6789'),
+('c003', 'pass345', 'Charlie', '010-3456-7890'),
+('c004', 'pass456', 'David', '010-4567-8901'),
+('c005', 'pass567', 'Eva', '010-5678-9012'),
+('c006', 'pass678', 'Frank', '010-6789-0123'),
+('c007', 'pass789', 'Grace', '010-7890-1234'),
+('c008', 'pass890', 'Hank', '010-8901-2345'),
+('c009', 'pass901', 'Ivy', '010-9012-3456'),
+('c010', 'pass012', 'Jack', '010-0123-4567');
+
 -- Insert dummy data into the Review table
 INSERT INTO `guesthouse`.`Review` (`content`, `rating`, `Customer_id`, `GuestHouse_id`) VALUES
 ('정말 편안하게 쉴 수 있었어요. 방도 깨끗하고 친절했습니다.', 5, 'C001', 'GH001'),
