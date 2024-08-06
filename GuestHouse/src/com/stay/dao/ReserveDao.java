@@ -18,7 +18,7 @@ import com.stay.vo.Room;
 import config.ServerInfo;
 
 public class ReserveDao {
-	static String location="서울특별시";
+	private String location="서울특별시";
 	//싱글톤
 	private static ReserveDao dao = new ReserveDao();
 
@@ -43,7 +43,9 @@ public class ReserveDao {
 		System.out.println("DB Connection 성공");
 		return conn;
 	}	
-	
+	public void selectLocation(String location) {
+		this.location= location;
+	}
 	
 	public void create(Customer cust) throws DMLException, DuplicateIDException {
 		String query = "INSERT INTO customer(id, name, pass, phone) VALUES(?,?,?,?)";
@@ -140,6 +142,7 @@ public class ReserveDao {
 		}
 	}
 	
+	
 	public ArrayList<GuestHouse> findByReviceCount() throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
@@ -178,16 +181,30 @@ public class ReserveDao {
 			}
 			
 		}catch(SQLException s) {
-			throw new DMLException("검색 도중 문제가 발생했습니다.");
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
 		return list;
 	}
 	
-	public ArrayList<GuestHouse> findByLeadMonth(){
+	public ArrayList<GuestHouse> findByLeadMonth() throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
-		String query="";
-		
+		String query="SELECT g1.id,g1.name,g1.address,g1.room_num,g1.room_price,g1.capacity,"
+				+ "(g2.room_price - g1.room_price )/g2.room_price*100 인하율 "
+				+ "FROM guesthouse g1 , guesthouse2 g2 "
+				+ "WHERE g1.id=g2.id AND g1.address= ?"
+				+ "ORDER BY 인하율 desc;";
+		try(
+			Connection conn=getConnection();
+			PreparedStatement ps = conn.prepareStatement(query);){
+			ps.setString(1, location);
+			
+			rs=ps.executeQuery();
+			
+			
+		}catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
+		}
 		
 		return list;
 	}
