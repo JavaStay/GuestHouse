@@ -14,6 +14,7 @@ public class Test {
 		
 		//printlist(dao.findByReviceCount());
 		printlist(dao.findByLeadMonth());
+		
 
 		
 }
