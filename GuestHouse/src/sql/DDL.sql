@@ -22,8 +22,7 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Customer` (
   `pass` VARCHAR(15) NULL,
   `name` VARCHAR(10) NULL,
   `phone` VARCHAR(15) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+  PRIMARY KEY (`id`));
 
 
 -- -----------------------------------------------------
@@ -36,8 +35,7 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`GuestHouse` (
   `room_num` INT NOT NULL,
   `room_price` INT NULL,
   `capacity` INT NULL,
-  PRIMARY KEY (`id`, `room_num`))
-ENGINE = InnoDB;
+  PRIMARY KEY (`id`, `room_num`));
 
 
 -- -----------------------------------------------------
@@ -59,8 +57,7 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Review` (
     FOREIGN KEY (`GuestHouse_id`)
     REFERENCES `guesthouse`.`GuestHouse` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    ON UPDATE NO ACTION);
 
 
 -- -----------------------------------------------------
@@ -89,14 +86,14 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
     REFERENCES `guesthouse`.`GuestHouse` (`id`,`room_num`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
-ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-CREATE TABLE guesthouse2
+
+CREATE TABLE JulyGuesthouse
     AS (SELECT id,
                name,
                address,
