@@ -202,7 +202,7 @@ public class ReserveDao {
 			rs=ps.executeQuery();
 			
 			while(rs.next()) {
-				list.add(new  GuestHouse(rs.getString(1),rs.getString(1),rs.getString(1),new ArrayList<Room>(new Room())));
+				list.add(new  GuestHouse(rs.getString(1),rs.getString(1),rs.getString(1),new ArrayList<Room>()));
 			}
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
