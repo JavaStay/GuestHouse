@@ -357,10 +357,9 @@ public class ReserveDao {
 						rs.getString("name"),
 						rs.getString("address"),
 						rooms));
-
-				if(list.isEmpty()){
-					System.out.println("검색하신 가격 범위의 게스트하우스는 없습니다.");
 				}
+				if(list.isEmpty()){
+				System.out.println("검색하신 가격 범위의 게스트하우스는 없습니다.");
 			}
 			return list;
 		} catch (SQLException e) {
