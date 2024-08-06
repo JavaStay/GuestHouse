@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
   `total_price` INT NULL,
   `Customer_id` VARCHAR(10) NOT NULL,
   `GuestHouse_id` VARCHAR(10) NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`, `room_num`),
   INDEX `fk_Reservation_Customer_idx` (`Customer_id` ASC) VISIBLE,
   INDEX `fk_Reservation_GuestHouse1_idx` (`GuestHouse_id` ASC) VISIBLE,
   CONSTRAINT `fk_Reservation_Customer`

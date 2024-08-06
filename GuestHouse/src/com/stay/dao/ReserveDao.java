@@ -6,7 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import com.stay.exception.DMLException;
 import com.stay.exception.DuplicateIDException;
@@ -191,5 +197,98 @@ public class ReserveDao {
 		
 		return list;
 	}
-	
+
+	public void reservation (LocalDate startdate, LocalDate enddate, String house_id, int room_num, String customId) {
+		String query = "insert into reservation( start_date, end_date, total_price, Customer_id, GuestHouse_id, GuestHouse_room_num) values(?,?,?,?,?,?);";
+		String query2 = "select room_price from guesthouse where id= ? and room_num = ?;";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String stdate = startdate.format(formatter);
+		String endate = enddate.format(formatter);
+		int roomPrice = 0;
+		List<String>  houseid = new ArrayList<>();
+		Period diff = Period.between(startdate, enddate);
+		int diffdate = diff.getDays();
+		System.out.println("날짜 차이는 "+diffdate);
+		try (Connection conn = getConnection();
+			 PreparedStatement pss = conn.prepareStatement(query2);
+			 PreparedStatement ps = conn.prepareStatement(query)) {
+
+			pss.setString(1, house_id);
+			pss.setInt(2, room_num);
+
+			ResultSet rs = pss.executeQuery();
+
+				if (rs.next()) {
+					//1박당 가격
+					roomPrice = rs.getInt("room_price");
+					//총가격
+					roomPrice = roomPrice*diffdate;
+				}
+
+				if (isdate(startdate, enddate,room_num,house_id)) {
+					ps.setString(1, stdate);
+					ps.setString(2, endate);
+					ps.setInt(3, roomPrice);
+					ps.setString(4, customId);
+					ps.setString(5, house_id);
+					ps.setInt(6, room_num);
+					ps.executeUpdate();
+					System.out.println("예약에 성공하셨습니다.");
+				}
+
+		} catch (SQLException e) {
+        throw new DMLException("예약 진행 시 문제가 발생해서 예약을 중단합니다.");
+
+		}
+	}
+
+		public  boolean isdate(LocalDate startdate, LocalDate enddate,int roomnum, String house_id){
+			String query = "select start_date,end_date, GuestHouse_id, GuestHouse_room_num from reservation WHERE GuestHouse_id =? and GuestHouse_room_num =? ;";
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			boolean flag = true;
+
+			List<LocalDate[]> datePairs = new ArrayList<>();
+			try(Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(query)) {
+
+				ps.setString(1,house_id);
+				ps.setInt(2,roomnum);
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()){
+					LocalDate startDate = LocalDate.parse(rs.getString("start_date"), formatter);
+					LocalDate endDate = LocalDate.parse(rs.getString("end_date"), formatter);
+
+					datePairs.add(new LocalDate[]{startDate, endDate});
+				}
+				for (LocalDate[] datePair : datePairs) {
+					LocalDate s = datePair[0];
+					LocalDate e = datePair[1];
+					if (startdate.equals(s) || enddate.equals(e) ||
+							(startdate.isAfter(s) && startdate.isBefore(e)) ||
+							(enddate.isBefore(e) && enddate.isAfter(s))) {
+						flag = false;
+					}else {
+						break;
+					}
+				}
+			}catch (SQLException e){
+
+			}
+			return flag;
+		}
+
+
+
+	public void  cancelReservation(String house_id, int room_num,String customerId){
+
+	}
+
+	public List<GuestHouse> findByResevable(LocalDate startdate, LocalDate enddate) {
+
+
+		return null;
+	}
+
+
 }//class
