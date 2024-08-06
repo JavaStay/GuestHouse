@@ -55,7 +55,7 @@ public class GuestHouse {
 	
 	@Override
 	public String toString() {
-		return "GuestHouse [id=" + id + ", name=" + name + ", address=" + address + ", rooms=" + rooms + "]";
+		return "GuestHouse [사업자 등록번호 : " + id + ",가게 이름 : " + name + ", 가게 주소 : " + address + ", 방들 : " + rooms + "]";
 	}
 
 }

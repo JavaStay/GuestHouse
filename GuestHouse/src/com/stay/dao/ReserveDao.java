@@ -197,8 +197,8 @@ public class ReserveDao {
 		}
 		return list;
 	}
-	//1. 숙소마다 가격인하율 평균을 내서 숙소 10개 리스트만 출력 
-	//2. 방마다 가격인하율 뽑아서 방 30개 리스트 출력 
+	
+	//1. 방마다 가격인하율 뽑아서 방 30개 리스트 출력 
 	public ArrayList<GuestHouse> findByLeadMonth() throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
@@ -212,9 +212,41 @@ public class ReserveDao {
 			ps.setString(1, location);
 			
 			rs=ps.executeQuery();
-			
+			int i=0;
 			while(rs.next()) {
-				list.add(new  GuestHouse(rs.getString(1),rs.getString(1),rs.getString(1),new ArrayList<Room>()));
+				list.add(new  GuestHouse(rs.getString(1),rs.getString(2),rs.getString(3),new ArrayList<Room>()));
+				list.get(i++).getRooms().add(new Room(rs.getInt(4),rs.getInt(5),rs.getInt(6)));
+			}
+		}catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
+		}
+		
+		return list;
+	}
+	//2. 숙소마다 가격인하율 평균을 내서 숙소 10개 리스트만 출력 
+	public ArrayList<GuestHouse> findByLeadMonth2() throws DMLException{
+		ArrayList<GuestHouse> list= new ArrayList<>();
+		ResultSet rs=null;
+		String query="SELECT DISTINCT g4.id,g4.name,g4.address,g5.인하율평균\r\n"
+				+ "from guesthouse g4, \r\n"
+				+ "(SELECT g3.id,avg(g3.인하율) 인하율평균\r\n"
+				+ "from (SELECT g1.id,(g2.room_price - g1.room_price )/g2.room_price*100 인하율\r\n"
+				+ "FROM guesthouse g1 , guesthouse2 g2\r\n"
+				+ "WHERE g1.room_num=g2.room_num AND g1.id=g2.id  AND g1.address= ?"
+				+ ") g3\r\n"
+				+ "GROUP BY id) g5\r\n"
+				+ "where g4.id=g5.id\r\n"
+				+ "ORDER BY 4 desc;";
+		try(
+			Connection conn=getConnection();
+			PreparedStatement ps = conn.prepareStatement(query);){
+			ps.setString(1, location);
+			
+			rs=ps.executeQuery();
+			int i=0;
+			while(rs.next()) {
+				list.add(new  GuestHouse(rs.getString(1),rs.getString(1),rs.getString(1),null));
+				
 			}
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
