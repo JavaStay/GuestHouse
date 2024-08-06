@@ -384,7 +384,6 @@ public class ReserveDao {
 
 		} catch (SQLException e) {
         throw new DMLException("예약 진행 시 문제가 발생해서 예약을 중단합니다.");
-
 		}
 	}
 
@@ -404,7 +403,6 @@ public class ReserveDao {
 				while (rs.next()){
 					LocalDate startDate = LocalDate.parse(rs.getString("start_date"), formatter);
 					LocalDate endDate = LocalDate.parse(rs.getString("end_date"), formatter);
-
 					datePairs.add(new LocalDate[]{startDate, endDate});
 				}
 				for (LocalDate[] datePair : datePairs) {
@@ -429,9 +427,37 @@ public class ReserveDao {
 
 
 	public List<GuestHouse> findByResevable(String location, String startdate, String enddate) {
+		String query = "SELECT r.start_date,r.end_date,r.GuestHouse_id, g.name, g.address, g.room_num, g.room_price, g.capacity \n" +
+				"FROM reservation r, (SELECT id, name,address,room_num,room_price,capacity  from guesthouse where address = ?) g\n" +
+				"WHERE r.GuestHouse_id = g.id and  \n" +
+				"(r.start_date BETWEEN ? AND ?) AND (end_date BETWEEN ? AND ?) ;";
 
+		ArrayList<GuestHouse> list =  new ArrayList<>();
+		try (Connection con = getConnection();
+			 PreparedStatement ps = con.prepareStatement(query)) {
+			ps.setString(1, location);
+			ps.setString(2,startdate);
+			ps.setString(3,enddate);
+			ps.setString(4,startdate);
+			ps.setString(5,enddate);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				ArrayList<Room> rooms = new ArrayList<>();
+				rooms.add(new Room(
+						rs.getInt("g.room_num"),
+						rs.getInt("g.room_price"),
+						rs.getInt("g.capacity")));
+				list.add(new GuestHouse(
+						rs.getString("r.GuestHouse_id"),
+						rs.getString("g.name"),
+						rs.getString("g.address"),
+						rooms));
+			}
 
-		return null;
+		}catch (SQLException e){
+
+		}
+		return list;
 	}
 	// 내가 예약한 정보 조회
 	public  ArrayList<Reservation> findMyReservation(String id) throws DMLException {
