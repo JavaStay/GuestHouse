@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 
-import com.mysql.cj.exceptions.RSAException;
 import com.stay.exception.DMLException;
 import com.stay.exception.DuplicateIDException;
 import com.stay.exception.RecordNotFoundException;
@@ -163,7 +162,7 @@ public class ReserveDao {
 				list.get(i).setName(rs.getString(2));
 				list.get(i).setAddress(rs.getString(3));
 				list.get(i++).getRooms().add(new Room(rs.getInt(4),rs.getInt(5),rs.getInt(6)));
-			}else throw new RecordNotFoundException();
+			}else throw new RecordNotFoundException("[ERROR] 게스트 하우스가 존재하지 않습니다.");
 			while(rs.next()) {
 				if(!rs.getString(1).equals(tid)) {
 					tid=rs.getString(1);
