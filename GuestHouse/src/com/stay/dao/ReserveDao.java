@@ -24,8 +24,6 @@ import com.stay.vo.GuestHouse;
 
 public class ReserveDao {
 
-	private String location="서울특별시";
-
 	//싱글톤
 	private static ReserveDao dao = new ReserveDao();
 
@@ -39,7 +37,7 @@ public class ReserveDao {
 			System.out.println("Driver Loading 실패");
 		}
 		
-	};
+	}
 	
 	public static ReserveDao getInstance() {
 		return dao;
@@ -49,14 +47,6 @@ public class ReserveDao {
 		Connection conn = DriverManager.getConnection(ServerInfo.URL, ServerInfo.USER, ServerInfo.PASSWORD);
 		System.out.println("DB Connection 성공");
 		return conn;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location= location;
 	}
 	
 	public void create(Customer cust) throws DMLException, DuplicateIDException {
@@ -146,7 +136,7 @@ public class ReserveDao {
 	}
 	
 
-	public ArrayList<GuestHouse> findByReviewCount() throws DMLException{
+	public ArrayList<GuestHouse> findByReviewCount(String location) throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
 		String query="SELECT g1.id,g1.name,g1.address,g1.room_num,g1.room_price,g1.capacity,"
@@ -167,8 +157,9 @@ public class ReserveDao {
 				list.get(i).setId(rs.getString(1));
 				list.get(i).setName(rs.getString(2));
 				list.get(i).setAddress(rs.getString(3));
-				list.get(i++).getRooms().add(new Room(rs.getInt(4),rs.getInt(5),rs.getInt(6)));
+				list.get(i++).getRooms().add(new Room(rs.getInt("room_num"),rs.getInt("room_price"),rs.getInt("capacity")));
 			}else throw new RecordNotFoundException("[ERROR] 게스트 하우스가 존재하지 않습니다.");
+
 			while(rs.next()) {
 				if(!rs.getString(1).equals(tid)) {
 					tid=rs.getString(1);
@@ -190,7 +181,7 @@ public class ReserveDao {
 	}
 
 	//1. 방마다 가격인하율 뽑아서 방 30개 리스트 출력
-	public ArrayList<GuestHouse> findByLeadMonth() throws DMLException{
+	public ArrayList<GuestHouse> findByLeadMonth(String location) throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
 		String query="SELECT g1.id,g1.name,g1.address,g1.room_num,g1.room_price,g1.capacity,(g2.room_price - g1.room_price )/g2.room_price*100 인하율 \r\n"
@@ -215,7 +206,7 @@ public class ReserveDao {
 		return list;
 	}
 	//2. 숙소마다 가격인하율 평균을 내서 숙소 10개 리스트만 출력
-	public ArrayList<GuestHouse> findByLeadMonth2() throws DMLException{
+	public ArrayList<GuestHouse> findByLeadMonth2(String location) throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
 		ResultSet rs=null;
 		String query="SELECT DISTINCT g4.id,g4.name,g4.address,g5.인하율평균\r\n"
@@ -246,7 +237,7 @@ public class ReserveDao {
     }
 
 	// 지역 내 게스트하우스별 최저가 숙소 sorting
-	public 	ArrayList<GuestHouse> findByMinPrice() throws DMLException {
+	public 	ArrayList<GuestHouse> findByMinPrice(String location) throws DMLException {
 		ArrayList<GuestHouse> list =  new ArrayList<>();
 
 		String query = "SELECT g1.id, g1.name, g1.address, g1.room_num, g1.room_price, g1.capacity " +
@@ -282,7 +273,7 @@ public class ReserveDao {
 	}
 
 	// 지역 내 게스트하우스별 평점 상위 10% 숙소 sorting
-	public 	ArrayList<GuestHouse> findByTopTenPercent() throws DMLException {
+	public 	ArrayList<GuestHouse> findByTopTenPercent(String location) throws DMLException {
 		ArrayList<GuestHouse> list =  new ArrayList<>();
 		Set<String> guestHouseIds = new HashSet<>();
 
@@ -307,9 +298,8 @@ public class ReserveDao {
 					list.add(new GuestHouse(
 						rs.getString("id"),
 						rs.getString("name"),
-						rs.getString("address"),
-						null));
-					}
+						rs.getString("address")));
+				}
 			}
 			return list;
 		}
@@ -319,9 +309,8 @@ public class ReserveDao {
 	}
 
 	// 가격 범위로 게스트 하우스 조회
-	public 	ArrayList<GuestHouse> findByprice(int x, int y) throws DMLException {
+	public 	ArrayList<GuestHouse> findByPrice(String location, int x, int y) throws DMLException {
 		ArrayList<GuestHouse> list =  new ArrayList<>();
-		Set<String> guestHouseIds = new HashSet<>();
 
 		String query = "SELECT id, name, address, room_num, room_price, capacity " +
 						"FROM guesthouse " +
@@ -357,42 +346,39 @@ public class ReserveDao {
 	}
 
 	public void reservation (String startDate, String endDate, String house_id, int room_num, String customId) {
-
-
-		String query = "insert into reservation( start_date, end_date, total_price, Customer_id, GuestHouse_id, GuestHouse_room_num) values(?,?,?,?,?,?);";
+		String query1 = "insert into reservation( start_date, end_date, total_price, Customer_id, GuestHouse_id, GuestHouse_room_num) values(?,?,?,?,?,?);";
 		String query2 = "select room_price from guesthouse where id= ? and room_num = ?;";
 
 		LocalDate stdate = LocalDate.parse(startDate);
 		LocalDate endate = LocalDate.parse(endDate);
 		int roomPrice = 0;
-		List<String>  houseid = new ArrayList<>();
 		Period diff = Period.between(stdate, endate);
 		int diffdate = diff.getDays();
-		System.out.println("날짜 차이는 "+diffdate);
+		//System.out.println("날짜 차이는 "+diffdate);
 		try (Connection conn = getConnection();
-			 PreparedStatement pss = conn.prepareStatement(query2);
-			 PreparedStatement ps = conn.prepareStatement(query)) {
+			 PreparedStatement ps2 = conn.prepareStatement(query2);
+			 PreparedStatement ps1 = conn.prepareStatement(query1)) {
 
-			pss.setString(1, house_id);
-			pss.setInt(2, room_num);
+			ps2.setString(1, house_id);
+			ps2.setInt(2, room_num);
 
-			ResultSet rs = pss.executeQuery();
+			ResultSet rs = ps2.executeQuery();
 
 				if (rs.next()) {
 					//1박당 가격
 					roomPrice = rs.getInt("room_price");
 					//총가격
-					roomPrice = roomPrice*diffdate;
+					roomPrice = roomPrice * diffdate;
 				}
 
 				if (isdate(stdate, endate,room_num,house_id)) {
-					ps.setString(1, startDate);
-					ps.setString(2, endDate);
-					ps.setInt(3, roomPrice);
-					ps.setString(4, customId);
-					ps.setString(5, house_id);
-					ps.setInt(6, room_num);
-					ps.executeUpdate();
+					ps1.setString(1, startDate);
+					ps1.setString(2, endDate);
+					ps1.setInt(3, roomPrice);
+					ps1.setString(4, customId);
+					ps1.setString(5, house_id);
+					ps1.setInt(6, room_num);
+					ps1.executeUpdate();
 					System.out.println("예약에 성공하셨습니다.");
 				}
 
@@ -440,11 +426,9 @@ public class ReserveDao {
 
 
 
-	public void  cancelReservation(String house_id, int room_num,String customerId){
 
-	}
 
-	public List<GuestHouse> findByResevable(String startdate, String enddate) {
+	public List<GuestHouse> findByResevable(String location, String startdate, String enddate) {
 
 
 		return null;
@@ -478,5 +462,34 @@ public class ReserveDao {
 		} catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
+	}
+	public void cancelReservation(String houseid, int room_num, String cust_id, String start_date, String end_date )
+			throws DMLException, RecordNotFoundException{
+
+		String query="  DELETE FROM reservation "
+				+ "WHERE customer_id=? AND Guesthouse_id=? AND Guesthouse_room_num=? "
+				+ "AND start_date=? AND end_date=?; ";
+
+		DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate startdate= LocalDate.parse(start_date, formater);
+		LocalDate enddate= LocalDate.parse(end_date, formater);
+
+
+		if(isdate(startdate, enddate, room_num, houseid)) {
+			try(
+					Connection conn=getConnection();
+					PreparedStatement ps = conn.prepareStatement(query);){
+				ps.setString(1, cust_id);
+				ps.setString(2, houseid);
+				ps.setInt(3, room_num);
+				ps.setString(4, start_date);
+				ps.setString(5, end_date);
+
+				System.out.println(ps.executeUpdate());
+			}catch (SQLException e) {
+				throw new DMLException("예약 취소 중 문제가 발생해서 예약을 중단합니다.");
+			}
+		}else throw new RecordNotFoundException("[ERROR] 해당하는 예약건이 존재하지 않습니다.");
+
 	}
 }//class

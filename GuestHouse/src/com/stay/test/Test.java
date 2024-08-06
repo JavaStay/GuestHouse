@@ -100,21 +100,21 @@ public class Test {
 		switch(optionNum) {
 			case 1:
 				// 최저가격 조회 
-//				dao.findByMinPrice().stream().forEach(System.out::println);
+				dao.findByMinPrice(location).forEach(System.out::println);
 				break;
 				
 			case 2:
 				// 평점 상위 10%조회
-//				dao.findByTopTenPercent().stream().forEach(System.out::println);
+				dao.findByTopTenPercent(location).forEach(System.out::println);
 				break;
 				
 			case 3:
 				// 가격범위 조회 
 				System.out.println("최저가격을 입력하세요.");
-				int lowPrice = sc.nextInt();
+				int minPrice = sc.nextInt();
 				System.out.println("최고가격을 입력하세요.");
-				int highPrice = sc.nextInt();
-//				dao.findByPrice(lowprice, highprice).stream().forEach(System.out::println);
+				int maxPrice = sc.nextInt();
+				dao.findByPrice(location, minPrice, maxPrice).forEach(System.out::println);
 				break;
 				
 			case 4:
@@ -126,18 +126,18 @@ public class Test {
 				String enddate = sc.next();
 
 
-				dao.findByResevable(startdate, enddate).stream().forEach(System.out::println);
+				dao.findByResevable(location, startdate, enddate).forEach(System.out::println);
 				
 				break;
 				
 			case 5:
 				// 리뷰 많은 순 조회
-				dao.findByReviewCount().stream().forEach(System.out::println);
+				dao.findByReviewCount(location).forEach(System.out::println);
 				break;
 				
 			case 6:
 				// 전월 대비 가격인하율이 높은순 조회
-				dao.findByLeadMonth().stream().forEach(System.out::println);
+				dao.findByLeadMonth(location).forEach(System.out::println);
 				break;
 				
 			default:
@@ -175,7 +175,7 @@ public class Test {
 		switch(num) {
 			case 1:
 				// 예약 내역 조회
-				dao.findMyReservation(loginId).stream().forEach(System.out::println);
+				dao.findMyReservation(loginId).forEach(System.out::println);
 				break;
 				
 			case 2:
@@ -184,8 +184,12 @@ public class Test {
 				String house_id = sc.next();
 				System.out.print("취소할 게스트하우스의 방 번호를 입력하세요 : ");
 				int room_num = sc.nextInt();
-				
-				dao.cancelReservation(house_id, room_num, loginId);
+				System.out.print("취소할 예약의 시작 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요) : ");
+				String start_date = sc.next();
+				System.out.print("취소할 예약의 끝 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요) : ");
+				String end_date = sc.next();
+
+				dao.cancelReservation(house_id, room_num, loginId, start_date,end_date);
 				break;
 			case 3: 
 				System.out.print("수정할 패스워드를 입력하세요 : ");
