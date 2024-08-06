@@ -1,6 +1,5 @@
 package com.stay.test;
 
-import java.time.LocalDate;
 import java.util.Scanner;
 
 import com.stay.dao.ReserveDao;
@@ -13,6 +12,9 @@ public class Test {
 	public static ReserveDao dao = ReserveDao.getInstance();
 	
 	public static void main(String[] args) {
+		//dao.delete("C001");
+		
+
 		String loginId = "";
 
 		// 초기 화면 
@@ -110,9 +112,9 @@ public class Test {
 				
 			case 3:
 				// 가격범위 조회 
-				System.out.println("최저가격을 입력하세요.");
+				System.out.print("최저가격을 입력하세요.");
 				int minPrice = sc.nextInt();
-				System.out.println("최고가격을 입력하세요.");
+				System.out.print("최고가격을 입력하세요.");
 				int maxPrice = sc.nextInt();
 				dao.findByPrice(location, minPrice, maxPrice).forEach(System.out::println);
 				break;
@@ -162,7 +164,7 @@ public class Test {
 
 		//2024-08-30
 		dao.reservation(startdate,enddate, guestHouseId, roomId, loginId);
-		System.out.println("예약이 완료되었습니다. ");
+
 	}
 	
 	// 마이페이지
@@ -189,7 +191,7 @@ public class Test {
 				System.out.print("취소할 예약의 끝 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요) : ");
 				String end_date = sc.next();
 
-				dao.cancelReservation(house_id, room_num, loginId, start_date,end_date);
+				dao.cancelReservation(house_id, room_num, loginId, start_date, end_date);
 				break;
 			case 3: 
 				System.out.print("수정할 패스워드를 입력하세요 : ");

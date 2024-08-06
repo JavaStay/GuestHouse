@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Customer` (
   `pass` VARCHAR(15) NULL,
   `name` VARCHAR(10) NULL,
   `phone` VARCHAR(15) NULL,
-  PRIMARY KEY (`id`));
+  PRIMARY KEY (`id`)
+  );
 
 
 -- -----------------------------------------------------
@@ -37,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`GuestHouse` (
   `capacity` INT NULL,
   PRIMARY KEY (`id`, `room_num`));
 
-
 -- -----------------------------------------------------
 -- Table `guesthouse`.`Review`
 -- -----------------------------------------------------
@@ -51,13 +51,13 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Review` (
   CONSTRAINT `fk_Review_Customer1`
     FOREIGN KEY (`Customer_id`)
     REFERENCES `guesthouse`.`Customer` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Review_GuestHouse1`
     FOREIGN KEY (`GuestHouse_id`)
     REFERENCES `guesthouse`.`GuestHouse` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
 
 
 -- -----------------------------------------------------
@@ -79,13 +79,13 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
   CONSTRAINT `fk_Reservation_Customer`
     FOREIGN KEY (`Customer_id`)
     REFERENCES `guesthouse`.`Customer` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Reservation_GuestHouse1`
     FOREIGN KEY (`GuestHouse_id`,`GuestHouse_room_num`)
     REFERENCES `guesthouse`.`GuestHouse` (`id`,`room_num`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
@@ -98,6 +98,6 @@ CREATE TABLE JulyGuesthouse
                name,
                address,
                room_num,
-               room_price+20000,
+               room_price+20000 as room_price,
                capacity
         FROM guesthouse);
