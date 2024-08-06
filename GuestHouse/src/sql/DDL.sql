@@ -67,7 +67,7 @@ ENGINE = InnoDB;
 -- Table `guesthouse`.`Reservation`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
-  `id` INT NOT NULL,
+  `id` INT AUTO_INCREMENT,
   `start_date` DATE NULL,
   `end_date` DATE NULL,
   `total_price` INT NULL,
@@ -95,3 +95,12 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+CREATE TABLE guesthouse2
+    AS (SELECT id,
+               name,
+               address,
+               room_num,
+               room_price+20000,
+               capacity
+        FROM guesthouse);

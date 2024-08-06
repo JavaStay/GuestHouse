@@ -10,16 +10,13 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import com.stay.exception.DMLException;
 import com.stay.exception.DuplicateIDException;
 import com.stay.exception.RecordNotFoundException;
 import com.stay.vo.Customer;
+import com.stay.vo.Reservation;
 import com.stay.vo.Room;
 
 import config.ServerInfo;
@@ -359,15 +356,17 @@ public class ReserveDao {
 		}
 	}
 
-	public void reservation (LocalDate startdate, LocalDate enddate, String house_id, int room_num, String customId) {
+	public void reservation (String startDate, String endDate, String house_id, int room_num, String customId) {
+
+
 		String query = "insert into reservation( start_date, end_date, total_price, Customer_id, GuestHouse_id, GuestHouse_room_num) values(?,?,?,?,?,?);";
 		String query2 = "select room_price from guesthouse where id= ? and room_num = ?;";
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String stdate = startdate.format(formatter);
-		String endate = enddate.format(formatter);
+
+		LocalDate stdate = LocalDate.parse(startDate);
+		LocalDate endate = LocalDate.parse(endDate);
 		int roomPrice = 0;
 		List<String>  houseid = new ArrayList<>();
-		Period diff = Period.between(startdate, enddate);
+		Period diff = Period.between(stdate, endate);
 		int diffdate = diff.getDays();
 		System.out.println("날짜 차이는 "+diffdate);
 		try (Connection conn = getConnection();
@@ -386,9 +385,9 @@ public class ReserveDao {
 					roomPrice = roomPrice*diffdate;
 				}
 
-				if (isdate(startdate, enddate,room_num,house_id)) {
-					ps.setString(1, stdate);
-					ps.setString(2, endate);
+				if (isdate(stdate, endate,room_num,house_id)) {
+					ps.setString(1, startDate);
+					ps.setString(2, endDate);
 					ps.setInt(3, roomPrice);
 					ps.setString(4, customId);
 					ps.setString(5, house_id);
@@ -445,11 +444,39 @@ public class ReserveDao {
 
 	}
 
-	public List<GuestHouse> findByResevable(LocalDate startdate, LocalDate enddate) {
+	public List<GuestHouse> findByResevable(String startdate, String enddate) {
 
 
 		return null;
 	}
+	// 내가 예약한 정보 조회
+	public  ArrayList<Reservation> findMyReservation(String id) throws DMLException {
+		ArrayList<Reservation> list =  new ArrayList<>();
 
+		String query = "SELECT id, start_date, end_date, total_price, Customer_id, GuestHouse_id, GuestHouse_room_num FROM reservation WHERE Customer_id = ?";
 
+		try (Connection con = getConnection();
+			 PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setString(1, id);
+
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				list.add(new Reservation(
+						rs.getString("GuestHouse_id"),
+						rs.getString("GuestHouse_room_num"),
+						rs.getDate("start_date"),
+						rs.getDate("end_date"),
+						rs.getInt("total_price")
+				));
+			}
+			if(list.isEmpty()){
+				System.out.println("예약하신 내용이 존재하지 않습니다.");
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
+		}
+	}
 }//class

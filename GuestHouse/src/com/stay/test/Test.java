@@ -1,5 +1,6 @@
 package com.stay.test;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import com.stay.dao.ReserveDao;
@@ -118,17 +119,14 @@ public class Test {
 				
 			case 4:
 				// 예약 가능 숙소 조회
-				System.out.print("체크인 월을 입력하세요 : ");
-				int startMonth = sc.nextInt(); // 08 
-				System.out.print("체크인 일을 입력하세요 : ");
-				int startDay = sc.nextInt(); // 13
-				
-				System.out.print("체크아웃 월을 입력하세요 : ");
-				int endMonth  = sc.nextInt();
-				System.out.print("체크아웃 일을 입력하세요 : ");
-				int endDay  = sc.nextInt();
-				
-				dao.findByReservable(2024, startMonth, startDay, 2024, endMonth, endDay);
+				System.out.print("체크인 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요): ");
+				String startdate = sc.next();
+
+				System.out.print("체크아웃 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요): ");
+				String enddate = sc.next();
+
+
+				dao.findByResevable(startdate, enddate).stream().forEach(System.out::println);
 				
 				break;
 				
@@ -156,17 +154,14 @@ public class Test {
 		System.out.print("방 번호를 입력하세요 : ");
 		int roomId = sc.nextInt();
 		
-		System.out.print("체크인 월을 입력하세요 : ");
-		int startMonth = sc.nextInt(); // 08 
-		System.out.print("체크인 일을 입력하세요 : ");
-		int startDay = sc.nextInt(); // 13
-		
-		System.out.print("체크아웃 월을 입력하세요 : ");
-		int endMonth  = sc.nextInt();
-		System.out.print("체크아웃 일을 입력하세요 : ");
-		int endDay  = sc.nextInt();
-		
-		dao.reservation(2024, startMonth, startDay, 2024, endMonth, endDay, guestHouseId, roomId, loginId);
+		System.out.print("체크인 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요): ");
+		String startdate = sc.next();
+
+		System.out.print("체크아웃 날짜를 입력하세요 (2024-08-30 형식으로 입력하세요): ");
+		String enddate = sc.next();
+
+		//2024-08-30
+		dao.reservation(startdate,enddate, guestHouseId, roomId, loginId);
 		System.out.println("예약이 완료되었습니다. ");
 	}
 	
@@ -179,7 +174,7 @@ public class Test {
 		
 		switch(num) {
 			case 1:
-				// 예약 내역 조회 
+				// 예약 내역 조회
 				dao.findMyReservation(loginId).stream().forEach(System.out::println);
 				break;
 				
