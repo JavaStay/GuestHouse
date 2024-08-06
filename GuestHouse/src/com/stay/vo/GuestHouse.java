@@ -10,7 +10,14 @@ public class GuestHouse {
 	ArrayList<Room> rooms = new ArrayList<>();
 
 	public GuestHouse() {}
-	
+
+	public GuestHouse(String id, String name, String address) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.address = address;
+	}
+
 	public GuestHouse(String id, String name, String address, ArrayList<Room> rooms) {
 		super();
 		this.id = id;
@@ -18,8 +25,6 @@ public class GuestHouse {
 		this.address = address;
 		this.rooms = rooms;
 	}
-
-
 
 	public String getId() {
 		return id;
@@ -55,7 +60,11 @@ public class GuestHouse {
 	
 	@Override
 	public String toString() {
-		return "GuestHouse [id=" + id + ", name=" + name + ", address=" + address + ", rooms=" + rooms + "]";
+		return "GuestHouse [사업자 등록번호 : " + id + ",가게 이름 : " + name + ", 가게 주소 : " + address + ", 방들 : " + rooms + "]";
+	}
+
+	public String excludeRoom() {
+		return "GuestHouse [id=" + id + ", name=" + name + ", address=" + address + "]";
 	}
 
 }

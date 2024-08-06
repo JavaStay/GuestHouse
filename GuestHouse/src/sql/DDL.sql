@@ -73,19 +73,22 @@ CREATE TABLE IF NOT EXISTS `guesthouse`.`Reservation` (
   `total_price` INT NULL,
   `Customer_id` VARCHAR(10) NOT NULL,
   `GuestHouse_id` VARCHAR(10) NOT NULL,
-  PRIMARY KEY (`id`, `room_num`),
+  `GuestHouse_room_num` int NOT NULL,
+
+  PRIMARY KEY (`id`),
   INDEX `fk_Reservation_Customer_idx` (`Customer_id` ASC) VISIBLE,
   INDEX `fk_Reservation_GuestHouse1_idx` (`GuestHouse_id` ASC) VISIBLE,
+  INDEX `fk_Reservation_GuestHouse2_idx` (`GuestHouse_room_num` ASC) VISIBLE,
   CONSTRAINT `fk_Reservation_Customer`
     FOREIGN KEY (`Customer_id`)
     REFERENCES `guesthouse`.`Customer` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reservation_GuestHouse1`
-    FOREIGN KEY (`GuestHouse_id`)
-    REFERENCES `guesthouse`.`GuestHouse` (`id`)
+    FOREIGN KEY (`GuestHouse_id`,`GuestHouse_room_num`)
+    REFERENCES `guesthouse`.`GuestHouse` (`id`,`room_num`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE NO ACTION);
 ENGINE = InnoDB;
 
 
