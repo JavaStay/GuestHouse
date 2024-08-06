@@ -34,16 +34,16 @@ INSERT INTO `guesthouse`.`GuestHouse` (`id`, `name`, `address`, `room_num`, `roo
 
 -- Insert dummy data into the Customer table
 INSERT INTO `guesthouse`.`Customer` (`id`, `pass`, `name`, `phone`) VALUES
-('c001', 'pass123', 'Alice', '010-1234-5678'),
-('c002', 'pass234', 'Bob', '010-2345-6789'),
-('c003', 'pass345', 'Charlie', '010-3456-7890'),
-('c004', 'pass456', 'David', '010-4567-8901'),
-('c005', 'pass567', 'Eva', '010-5678-9012'),
-('c006', 'pass678', 'Frank', '010-6789-0123'),
-('c007', 'pass789', 'Grace', '010-7890-1234'),
-('c008', 'pass890', 'Hank', '010-8901-2345'),
-('c009', 'pass901', 'Ivy', '010-9012-3456'),
-('c010', 'pass012', 'Jack', '010-0123-4567');
+('C001', 'password1', '김철수', '010-1111-1111'),
+('C002', 'password2', '이영희', '010-2222-2222'),
+('C003', 'password3', '박지훈', '010-3333-3333'),
+('C004', 'password4', '최민수', '010-4444-4444'),
+('C005', 'password5', '한지민', '010-5555-5555'),
+('C006', 'password6', '정유진', '010-6666-6666'),
+('C007', 'password7', '장동건', '010-7777-7777'),
+('C008', 'password8', '고소영', '010-8888-8888'),
+('C009', 'password9', '유재석', '010-9999-9999'),
+('C010', 'password10', '강호동', '010-1010-1010');
 
 -- Insert dummy data into the Review table
 INSERT INTO `guesthouse`.`Review` (`content`, `rating`, `Customer_id`, `GuestHouse_id`) VALUES
