@@ -12,8 +12,8 @@ public class Test {
 		
 		//dao.createCustomer(new Customer("10", "신승현", "qwer123", "010-1111-1111"));
 		
-		printlist(dao.findByReviceCount());
-		
+		//printlist(dao.findByReviceCount());
+		printlist(dao.findByLeadMonth());
 
 		
 }
