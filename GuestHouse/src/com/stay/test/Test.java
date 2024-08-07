@@ -110,7 +110,7 @@ public class Test {
 				
 			case 2:
 				// 평점 상위 10%조회
-				dao.findByTopTenPercent(location).forEach(System.out::println);
+				dao.findByTopTenPercent(location).forEach(i-> System.out.println(i.excludeRoom()));
 				break;
 				
 			case 3:
