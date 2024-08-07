@@ -453,16 +453,18 @@ public class ReserveDao {
 				}
 				
 				for (LocalDate[] datePair : datePairs) {
+					
 					LocalDate s = datePair[0];
 					LocalDate e = datePair[1];
 					
-					if (startdate.equals(s) || enddate.equals(e) ||
-							(startdate.isAfter(s) && startdate.isBefore(e)) ||
-							(enddate.isBefore(e) && enddate.isAfter(s))) {
-						flag = false;
-					}else {
-						break;
-					}
+					if (startdate.equals(s) || enddate.equals(e) ) flag = false; 
+					else if(startdate.isAfter(s) && enddate.isBefore(e) ) flag = false; // 모두 속하지 않을 때,
+					else if(startdate.isBefore(s)  && enddate.isAfter(e) )flag = false; // 전 범위에 속할 때,
+					
+					else if(startdate.isBefore(s) && enddate.isAfter(s) && enddate.isBefore(e) ) flag= false;	
+					else if(startdate.isAfter(s) && startdate.isBefore(e) && enddate.isAfter(e) ) flag = false;
+					else break;
+					
 				}
 			}catch (SQLException e){
 
