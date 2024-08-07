@@ -138,6 +138,7 @@ INSERT INTO `guesthouse`.`Review` (`content`, `rating`, `Customer_id`, `GuestHou
 ('정말 즐거운 시간이었습니다. 강력 추천합니다.', 5, 'C008', 'GH028'),
 ('가격 대비 훌륭한 숙소였습니다. 재방문 의사 있습니다.', 4, 'C009', 'GH029'),
 ('편안하게 쉴 수 있는 공간이었습니다. 만족합니다.', 4, 'C010', 'GH030');
+
 -- Insert dummy data into the Reservation table
 INSERT INTO `guesthouse`.`Reservation` (`id`, `start_date`, `end_date`, `total_price`, `Customer_id`, `GuestHouse_id`, `GuestHouse_room_num`) VALUES
 (1, '2024-01-01', '2024-01-03', 50000, 'C001', 'GH001', 101),
