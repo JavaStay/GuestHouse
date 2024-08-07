@@ -200,12 +200,15 @@ public class ReserveDao {
 				list.add(new  GuestHouse(rs.getString(1),rs.getString(2),rs.getString(3),new ArrayList<Room>()));
 				list.get(i++).getRooms().add(new Room(rs.getInt(4),rs.getInt(5),rs.getInt(6)));
 			}
+			
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
 
 		return list;
 	}
+	
+	
 	//2. 숙소마다 가격인하율 평균을 내서 숙소 10개 리스트만 출력
 	public ArrayList<GuestHouse> findByLeadMonth2(String location) throws DMLException{
 		ArrayList<GuestHouse> list= new ArrayList<>();
@@ -220,6 +223,7 @@ public class ReserveDao {
 				+ "GROUP BY id) g5\r\n"
 				+ "where g4.id=g5.id\r\n"
 				+ "ORDER BY 4 desc;";
+		
 		try(
 			Connection conn=getConnection();
 			PreparedStatement ps = conn.prepareStatement(query);){
@@ -231,6 +235,7 @@ public class ReserveDao {
 				list.add(new  GuestHouse(rs.getString(1),rs.getString(1),rs.getString(1),null));
 
 			}
+			
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
@@ -268,6 +273,7 @@ public class ReserveDao {
 				}
 			return list;
 			}
+		
 			catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
 		}
@@ -309,6 +315,7 @@ public class ReserveDao {
 		}
 	}
 
+	
 	// 가격 범위로 게스트 하우스 조회
 	public 	ArrayList<GuestHouse> findByPrice(String location, int x, int y) throws DMLException {
 		ArrayList<GuestHouse> list =  new ArrayList<>();
@@ -346,9 +353,12 @@ public class ReserveDao {
 		}
 	}
 
+	
+	
 	public List<GuestHouse> findByReservable(String location, String startdate, String enddate) {
 		String query1="SELECT * FROM guesthouse where address =?";
 		String query2="SELECT GuestHouse_id,GuestHouse_room_num FROM reservation WHERE start_date= ? or end_date= ? or (? < start_date AND ? > start_date) or ( ? < end_date and ? > end_date)";
+		
 		ResultSet rs1=null;
 		ResultSet rs2=null;
 		List<GuestHouse> list= new ArrayList<>();
@@ -357,20 +367,21 @@ public class ReserveDao {
 			Connection conn=getConnection();
 			PreparedStatement ps1 = conn.prepareStatement(query1);
 			PreparedStatement ps2 = conn.prepareStatement(query2);){
-			ps1.setString(1, location);
 			
+			ps1.setString(1, location);
 			ps2.setString(1, startdate);
 			ps2.setString(2, enddate);
 			ps2.setString(3, startdate);
 			ps2.setString(4, enddate);
 			ps2.setString(5, startdate);
 			ps2.setString(6, enddate);
-			System.out.println(1111);
+			
 			rs1=ps1.executeQuery();
 			while(rs1.next()) {
 			list.add(new GuestHouse(rs1.getString(1),rs1.getString(2) ,rs1.getString(3)));
 			list.get(i++).getRooms().add(new Room(rs1.getInt(4),rs1.getInt(5),rs1.getInt(6)));
 			}
+			
 			rs2=ps2.executeQuery();
 			while(rs2.next()){
 				for(GuestHouse g : list) {
@@ -379,6 +390,7 @@ public class ReserveDao {
 					}
 				}
 			}
+			
 		}catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다. ");
 		}catch (ConcurrentModificationException e) {
@@ -394,10 +406,12 @@ public class ReserveDao {
 
 		LocalDate stdate = LocalDate.parse(startDate);
 		LocalDate endate = LocalDate.parse(endDate);
+		
 		int roomPrice = 0;
 		Period diff = Period.between(stdate, endate);
 		int diffdate = diff.getDays();
 		//System.out.println("날짜 차이는 "+diffdate);
+		
 		try (Connection conn = getConnection();
 			 PreparedStatement ps2 = conn.prepareStatement(query2);
 			 PreparedStatement ps1 = conn.prepareStatement(query1)) {
@@ -497,9 +511,11 @@ public class ReserveDao {
 						rs.getInt("total_price")
 				));
 			}
+			
 			if(list.isEmpty()){
 				System.out.println("예약하신 내용이 존재하지 않습니다.");
 			}
+			
 			return list;
 		} catch (SQLException e) {
 			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다.");
@@ -507,8 +523,7 @@ public class ReserveDao {
 	}
 	
 	
-	public void cancelReservation(String houseid, int room_num, String cust_id, String start_date, String end_date )
-			throws DMLException, RecordNotFoundException{
+	public void cancelReservation(String houseid, int room_num, String cust_id, String start_date, String end_date ) throws DMLException, RecordNotFoundException{
 
 		String query="  DELETE FROM reservation "
 				+ "WHERE customer_id=? AND Guesthouse_id=? AND Guesthouse_room_num=? "

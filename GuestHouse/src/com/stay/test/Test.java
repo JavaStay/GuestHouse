@@ -2,8 +2,6 @@ package com.stay.test;
 
 import java.util.Scanner;
 
-import javax.naming.LinkLoopException;
-
 import com.stay.dao.ReserveDao;
 import com.stay.exception.DMLException;
 import com.stay.exception.RecordNotFoundException;
