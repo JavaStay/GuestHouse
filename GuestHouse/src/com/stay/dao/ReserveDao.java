@@ -346,6 +346,48 @@ public class ReserveDao {
 		}
 	}
 
+	public List<GuestHouse> findByReservable(String location, String startdate, String enddate) {
+		String query1="SELECT * FROM guesthouse where address =?";
+		String query2="SELECT GuestHouse_id,GuestHouse_room_num FROM reservation WHERE start_date= ? or end_date= ? or (? < start_date AND ? > start_date) or ( ? < end_date and ? > end_date)";
+		ResultSet rs1=null;
+		ResultSet rs2=null;
+		List<GuestHouse> list= new ArrayList<>();
+		int i=0;
+		try(
+			Connection conn=getConnection();
+			PreparedStatement ps1 = conn.prepareStatement(query1);
+			PreparedStatement ps2 = conn.prepareStatement(query2);){
+			ps1.setString(1, location);
+			
+			ps2.setString(1, startdate);
+			ps2.setString(2, enddate);
+			ps2.setString(3, startdate);
+			ps2.setString(4, enddate);
+			ps2.setString(5, startdate);
+			ps2.setString(6, enddate);
+			System.out.println(1111);
+			rs1=ps1.executeQuery();
+			while(rs1.next()) {
+			list.add(new GuestHouse(rs1.getString(1),rs1.getString(2) ,rs1.getString(3)));
+			list.get(i++).getRooms().add(new Room(rs1.getInt(4),rs1.getInt(5),rs1.getInt(6)));
+			}
+			rs2=ps2.executeQuery();
+			while(rs2.next()){
+				for(GuestHouse g : list) {
+					if( g.getId().equals(rs2.getString(1))& g.getRooms().get(0).getNum()==rs2.getInt(2)) {
+						list.remove(g);
+					}
+				}
+			}
+		}catch (SQLException e) {
+			throw new DMLException("[ERROR] 검색 도중 문제가 발생했습니다. ");
+		}catch (ConcurrentModificationException e) {
+			
+		}
+		
+		return list;
+	}
+	
 	public void reservation (String startDate, String endDate, String house_id, int room_num, String customId) {
 		String query1 = "insert into reservation( start_date, end_date, total_price, Customer_id, GuestHouse_id, GuestHouse_room_num) values(?,?,?,?,?,?);";
 		String query2 = "select room_price from guesthouse where id= ? and room_num = ?;";
@@ -429,49 +471,6 @@ public class ReserveDao {
 		}
 
 
-	public List<GuestHouse> findByReservable(String location, String startdate, String enddate) {
-	    String query = "SELECT g.id, g.name, g.address, g.room_num, g.room_price, g.capacity\n" +
-	          "FROM guesthouse g\n" +
-	          "LEFT JOIN reservation r\n" +
-	          "ON g.id = r.GuestHouse_id \n" +
-	          "AND r.start_date BETWEEN ? AND ? \n" +
-	          "AND r.end_date BETWEEN ? AND ?\n" +
-	          "WHERE r.GuestHouse_id IS NULL\n" +
-	          "AND g.address = ?;";
-
-	    ArrayList<GuestHouse> list =  new ArrayList<>();
-	    try (Connection con = getConnection();
-	        PreparedStatement ps = con.prepareStatement(query)) {
-	       ps.setString(1, startdate);
-	       ps.setString(2,enddate);
-	       ps.setString(3,startdate);
-	       ps.setString(4,enddate);
-	       ps.setString(5,location);
-	       
-	       ResultSet rs = ps.executeQuery();
-	       
-	       while (rs.next()) {
-	          ArrayList<Room> rooms = new ArrayList<>();
-	          
-	          rooms.add(new Room(
-	                rs.getInt("g.room_num"),
-	                rs.getInt("g.room_price"),
-	                rs.getInt("g.capacity")));
-	          list.add(new GuestHouse(
-	                rs.getString("g.id"),
-	                rs.getString("g.name"),
-	                rs.getString("g.address"),
-	                rooms));
-	       }
-	       
-	       if (list.isEmpty()){
-	          System.out.println("해당 날짜는 이미 예약 됐습니다.");
-	       }
-	    }catch (SQLException e){
-	       throw new RecordNotFoundException("예약 진행 시 문제가 발생해서 예약을 중단합니다.");
-	    }
-	    return list;
-	}
 	
 	
 	// 내가 예약한 정보 조회
@@ -539,4 +538,6 @@ public class ReserveDao {
 		}else throw new RecordNotFoundException("[ERROR] 해당하는 예약건이 존재하지 않습니다.");
 
 	}
+	
+	
 }//class

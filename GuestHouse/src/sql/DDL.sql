@@ -93,11 +93,3 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
-CREATE TABLE JulyGuesthouse
-    AS (SELECT id,
-               name,
-               address,
-               room_num,
-               room_price+20000 as room_price,
-               capacity
-        FROM guesthouse);
