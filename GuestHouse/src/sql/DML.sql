@@ -1,4 +1,5 @@
-select * from customer;
-
 select * from guesthouse;
-select * from reservation;
+select * from customer;
+select * from review;
+SELECT * FROM reservation;
+SELECT * FROM julyGuestHouse;
