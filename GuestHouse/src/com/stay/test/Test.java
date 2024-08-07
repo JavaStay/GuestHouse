@@ -2,6 +2,8 @@ package com.stay.test;
 
 import java.util.Scanner;
 
+import javax.naming.LinkLoopException;
+
 import com.stay.dao.ReserveDao;
 import com.stay.exception.DMLException;
 import com.stay.exception.RecordNotFoundException;
@@ -21,6 +23,7 @@ public class Test {
 		while (true) {
 			
 			// 로그인 
+			loop:
 			while (true) {
 				loginId = Login();
                 
@@ -47,8 +50,8 @@ public class Test {
 						break;
 					case 3:
 						// 마이페이지
-						selectMypage(loginId);
-						break;
+						if(selectMypage(loginId) ) break loop;
+						else break;
 					case 0:
 						// 로그아웃
 						loginId = "fail";
@@ -107,7 +110,7 @@ public class Test {
 				
 			case 2:
 				// 평점 상위 10%조회
-				dao.findByTopTenPercent(location).forEach(System.out::println);
+				dao.findByTopTenPercent(location).forEach(i-> System.out.println(i.excludeRoom()));
 				break;
 				
 			case 3:
@@ -168,7 +171,7 @@ public class Test {
 	}
 	
 	// 마이페이지
-	static void selectMypage(String loginId) {
+	static boolean selectMypage(String loginId) {
 		System.out.println("\n======== 마이페이지 ========");
 		System.out.println("[1]예약내역 확인   [2]예약취소   [3]회원정보수정   [4]회원탈퇴   [0]메인으로 돌아가기");
 		System.out.print("번호를 선택하세요 : ");
@@ -207,8 +210,7 @@ public class Test {
 			case 4:
 				// 회원탈퇴
 				dao.delete(loginId);
-				
-				break;
+				return true;
 				
 			case 0:
 				break;
@@ -216,6 +218,8 @@ public class Test {
 			default:
 				System.out.println("유효하지않은 번호입니다. 다시 입력해주세요.");
 		}
+		
+		return false;
 	}
 	
 	static void SignUp() {
