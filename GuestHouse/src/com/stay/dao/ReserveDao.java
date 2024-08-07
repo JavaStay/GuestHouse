@@ -83,7 +83,7 @@ public class ReserveDao {
 			ResultSet rs = ps.executeQuery();
 			
 			if( !rs.next()) {
-				throw new RecordNotFoundException("[ERROR] 존재하지 않는 id 입니다.");
+				throw new RecordNotFoundException("[ERROR] 존재하지 않는 회원입니다.");
 			}
 			else System.out.println("로그인에 성공하셨습니다.");
 
