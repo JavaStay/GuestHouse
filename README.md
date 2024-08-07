@@ -4,9 +4,9 @@
 
 
 ### :rocket: ERD
-#### 초기 ERD
+#### 1. 초기 ERD
 ![erd-guesthouse-초기설계](https://github.com/user-attachments/assets/6aa6846b-8b03-4c1d-b426-2728ad0be114)
 
 
-#### 최종 ERD
+#### 2. 최종 ERD
 ![erd-guesthouse](https://github.com/user-attachments/assets/ff0c03f3-fd84-4ffb-a767-dbf5d984dc1a)
